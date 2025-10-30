@@ -59,15 +59,31 @@ data-kafka/
 - Data Kafka disimpan di folder `data-kafka`.
 - Kafka UI dapat diakses di [http://localhost:8080](http://localhost:8080).
 
+### Penjelasan Terkait Dead Letter Queue
+> Dead Letter Queue (DLQ) adalah suatu mekanisme dalam penanganan error (error hendling) dalam Kafka
+
+Dalam aplikasi ini, mekanisme yang diimplementasikan adalah melakukan _retry_ sebanyak 3 kali, jika sudah dilakukan sebanyak 3 kali maka message yang diterima akan dimasukkan ke dalam topic DLQ.
+
+Untuk tujuan simulasi, maka aplikasi publisher akan mengirimkan pesan yang mengandung string 'error'. Lalu pada subscriber, akan melakukan validasi jika message yang diterima mengandung string 'error' maka aplikasi akan mengkategorikan pesan ini sebagai pesan yang gagal diproses dalam subscriber.
+
 ### Contoh Script Kafka (Jika Melakukan Konfigurasi Melalui Shell)
 
 - Membuat Topik
 ```Shell
 kafka-topics \
   --create \
-  --topic sample-topic \
+  --topic contoh-topic \
   --bootstrap-server localhost:9092 \
-  --partitions 1 \
+  --partitions 2 \
+  --replication-factor 1
+```
+- Membuat Topik Dead Letter Queue
+```Shell
+kafka-topics \
+  --create \
+  --topic contoh-topic-dlq \
+  --bootstrap-server localhost:9092 \
+  --partitions 2 \
   --replication-factor 1
 ```
 - Menjadikan Kafka Coordinator (opsional)
@@ -89,7 +105,7 @@ kafka-topics --create \
 ## Catatan
 
 - Pastikan port 9092 dan 8080 tidak digunakan oleh aplikasi lain.
-- Untuk eksperimen, topik Kafka yang digunakan adalah `contoh-topic`.
+- Untuk eksperimen, topik Kafka yang digunakan adalah `contoh-topic` dan `contoh-topic-dlq`.
 
 ---
 
